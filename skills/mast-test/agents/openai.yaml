@@ -1,0 +1,6 @@
+interface:
+  display_name: "Mast test"
+  short_description: "Report the channel configuration and send one test page"
+  default_prompt: "Send a test page to my phone"
+policy:
+  allow_implicit_invocation: false

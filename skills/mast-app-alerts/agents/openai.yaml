@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mast app alerts"
+  short_description: "Wire push pages and heartbeats into the app being built"
+  default_prompt: "Alert me on my phone when a payment fails in this app"

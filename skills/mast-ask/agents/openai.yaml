@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mast ask"
+  short_description: "Page the owner and wait for the acknowledgement"
+  default_prompt: "Get my OK on the phone before you deploy"

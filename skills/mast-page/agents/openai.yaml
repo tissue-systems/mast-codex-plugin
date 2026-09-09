@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mast page"
+  short_description: "Send one message to the owner's phone"
+  default_prompt: "Page me on my phone when this is done"

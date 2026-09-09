@@ -1,0 +1,6 @@
+interface:
+  display_name: "Mast setup"
+  short_description: "Connect a Mast channel URL and send a test page"
+  default_prompt: "Set up the Mast pager for this machine"
+policy:
+  allow_implicit_invocation: false

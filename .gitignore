@@ -1,0 +1,3 @@
+.codex/*.local.md
+.claude/*.local.md
+.DS_Store
