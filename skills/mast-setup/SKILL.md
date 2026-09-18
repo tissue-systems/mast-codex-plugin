@@ -14,7 +14,7 @@ Paths below are relative to this skill's directory.
 1. Run `bash scripts/mast-status.sh`. If it reports a configured channel, skip to step 4.
 
 2. Ask the user for a channel URL, and tell them how to get one if they do not have it:
-   - Install Mast Pager from the App Store (https://apps.apple.com/us/app/mast-pager/id6805232044).
+   - Install Mast Pager from the App Store (https://apps.apple.com/us/app/mast-pager/id6805232044?pt=129362925&ct=plugin-codex&mt=8).
    - In the app, create a channel named for this machine or for Codex, and copy its URL.
      It looks like `https://mast.tissue.dev/mk_…`. A bare `mk_…` key is accepted as well.
    - **Raise the channel's ceiling to `page` in the app** (channel settings). Every new channel
