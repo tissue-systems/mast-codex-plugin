@@ -1,6 +1,6 @@
 # Mast pager plugin for Codex
 
-[Mast](https://tissue.systems/mast) is an iPhone and Apple Watch pager. This plugin connects a
+[Mast](https://tissue.systems/mast) is a pager app for iPhone, Apple Watch and Android. This plugin connects a
 Codex session to one Mast channel. It needs no account, no token and no server: a channel URL
 from the app is the whole configuration.
 
@@ -14,9 +14,9 @@ project configured for one is configured for the other.
 
 ## Requirements
 
-- **The Mast Pager app** on an iPhone, from the
-  [App Store](https://apps.apple.com/us/app/mast-pager/id6805232044?pt=129362925&ct=plugin-codex&mt=8). It is a one-time purchase
-  of $4.99, not a subscription. Pages mirror to a paired Apple Watch.
+- **The Mast Pager app**, free, on an iPhone from the
+  [App Store](https://apps.apple.com/us/app/mast-pager/id6805232044?pt=129362925&ct=plugin-codex&mt=8) or on an Android phone from
+  [Google Play](https://play.google.com/store/apps/details?id=systems.tissue.mast). On an iPhone, pages mirror to a paired Apple Watch.
 - **A channel** created in the app. The app hands you its URL; that URL is what the plugin sends
   to, and it is the only secret involved.
 - `bash` and `curl` on the machine running Codex. `jq` is used when present.
@@ -144,6 +144,7 @@ request from the same session folds into the card already on the phone instead o
 
 - Mast: https://tissue.systems/mast
 - Mast Pager on the App Store: https://apps.apple.com/us/app/mast-pager/id6805232044?pt=129362925&ct=plugin-codex&mt=8
+- Mast Pager on Google Play: https://play.google.com/store/apps/details?id=systems.tissue.mast
 - Sending to a channel, all fields and limits: https://tissue.systems/docs/mast/connect/
   (title 250 characters, body 4096, 60 sends a minute per channel)
 - Which priority to use for what: https://tissue.systems/mast/guide

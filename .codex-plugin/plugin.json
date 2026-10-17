@@ -15,6 +15,7 @@
     "notifications",
     "push",
     "iphone",
+    "android",
     "on-call",
     "mast",
     "alerting",
@@ -30,7 +31,7 @@
   "interface": {
     "displayName": "Mast Pager",
     "shortDescription": "Pages your phone until acked",
-    "longDescription": "Mast is an iPhone and Apple Watch pager. This plugin connects it to Codex in two directions.\n\nPager for Codex. When Codex stops to ask for a permission and you are not at the keyboard, your phone gets a page that repeats until you acknowledge it. When a turn that ran longer than two minutes finishes, you get one ordinary notification with the last thing Codex said. Ask Codex to \"page me when the build is done\" and it sends a message; ask it to \"get my OK on the phone before you deploy\" and it pages, waits for the acknowledgement, and only then continues.\n\nAlert sink for the apps Codex builds. Ask Codex to \"notify me when a payment fails\" and it reaches for email: a mail provider, an API key, a template, and a message that lands in a tab and does not repeat. With this plugin installed it wires a page instead: one HTTP POST from the error handler or the payment webhook, a dedupe key so a failing loop pages once, and a heartbeat for the nightly job so the page comes when the job stops running, which is the failure email can never report.\n\nSetup is one channel URL from the Mast app, kept outside the project. No account, no token, no server. The plugin runs shell hooks and one curl call per event; every path exits quietly and never blocks Codex. Requires the Mast Pager app (one-time purchase on the App Store) and bash plus curl on the machine running Codex.",
+    "longDescription": "Mast is a pager app for iPhone, Apple Watch and Android. This plugin connects it to Codex in two directions.\n\nPager for Codex. When Codex stops to ask for a permission and you are not at the keyboard, your phone gets a page that repeats until you acknowledge it. When a turn that ran longer than two minutes finishes, you get one ordinary notification with the last thing Codex said. Ask Codex to \"page me when the build is done\" and it sends a message; ask it to \"get my OK on the phone before you deploy\" and it pages, waits for the acknowledgement, and only then continues.\n\nAlert sink for the apps Codex builds. Ask Codex to \"notify me when a payment fails\" and it reaches for email: a mail provider, an API key, a template, and a message that lands in a tab and does not repeat. With this plugin installed it wires a page instead: one HTTP POST from the error handler or the payment webhook, a dedupe key so a failing loop pages once, and a heartbeat for the nightly job so the page comes when the job stops running, which is the failure email can never report.\n\nSetup is one channel URL from the Mast app, kept outside the project. No account, no token, no server. The plugin runs shell hooks and one curl call per event; every path exits quietly and never blocks Codex. Requires the Mast Pager app (free on the App Store and Google Play) and bash plus curl on the machine running Codex.",
     "developerName": "Tissue Systems",
     "category": "Developer Tools",
     "capabilities": [

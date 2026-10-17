@@ -5,7 +5,7 @@ description: Use when the user building an application asks how to "get alerted 
 
 # Pager alerts for the app being built
 
-Mast is an iPhone pager. An app alerts its owner with one HTTPS POST to a channel URL, with
+Mast is a phone pager app, on iPhone and Android. An app alerts its owner with one HTTPS POST to a channel URL, with
 no SDK, no account and no API key: the URL is the credential. The owner performs the only human
 step. Everything else is code to write.
 
