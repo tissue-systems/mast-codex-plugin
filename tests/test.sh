@@ -31,6 +31,12 @@ for d in skills/*/; do
 done
 grep -rn 'CLAUDE_PLUGIN\|/mast:' scripts skills hooks >/dev/null && bad "Claude-only references left" || ok "no Claude-only references"
 
+# Keep the developer's own ~/.config/mast out of the results.
+cfg="$(mktemp -d)"
+export HOME="$cfg" XDG_CONFIG_HOME="$cfg/.config"
+mkdir -p "$XDG_CONFIG_HOME/mast"
+unset MAST_ALLOWED_HOSTS MAST_STOP_MIN_SECS
+
 # lib: URL normalisation
 . scripts/lib.sh
 t() { local got; got="$(MAST_CHANNEL_URL="$1" mast_channel_url)"; [[ "$got" == "$2" ]] && ok "url $1" || bad "url $1 -> $got"; }
@@ -38,7 +44,15 @@ t "mk_abc" "https://mast.tissue.dev/mk_abc"
 t "https://mast.tissue.dev/m/mk_abc" "https://mast.tissue.dev/mk_abc"
 t "https://mast.tissue.dev/mk_abc/" "https://mast.tissue.dev/mk_abc"
 t " https://mast.tissue.dev/mk_abc " "https://mast.tissue.dev/mk_abc"
-( MAST_CHANNEL_URL="ftp://x" mast_channel_url >/dev/null ) && bad "rejects ftp" || ok "rejects ftp"
+refuse() { ( MAST_CHANNEL_URL="$1" mast_channel_url >/dev/null ) && bad "refuses $1" || ok "refuses $1"; }
+refuse "ftp://x"
+refuse "http://mast.tissue.dev/mk_abc"
+refuse "https://evil.example/mk_abc"
+refuse "https://mast.tissue.dev@evil.example/mk_abc"
+refuse "https://mast.tissue.dev.evil.example/mk_abc"
+[[ "$(MAST_ALLOWED_HOSTS="mast.example" MAST_CHANNEL_URL=https://mast.example/mk_x mast_channel_url)" == "https://mast.example/mk_x" ]] \
+  && ok "MAST_ALLOWED_HOSTS admits a host" || bad "MAST_ALLOWED_HOSTS"
+mast_valid_setting stop_min_secs 'HOME[$(id)]' && bad "rejects a hostile stop_min_secs" || ok "rejects a hostile stop_min_secs"
 
 # settings file precedence
 tmp="$(mktemp -d)"; mkdir -p "$tmp/.claude" "$tmp/.codex"
@@ -47,6 +61,30 @@ printf -- '---\nchannel_url: mk_claude\n---\n' > "$tmp/.claude/mast.local.md"
 printf -- '---\nchannel_url: "mk_codex"\nstop_min_secs: 7\n---\n' > "$tmp/.codex/mast.local.md"
 [[ "$(MAST_CHANNEL_URL= mast_channel_url "$tmp")" == "https://mast.tissue.dev/mk_codex" ]] && ok ".codex wins over .claude" || bad ".codex wins over .claude"
 [[ "$(mast_setting stop_min_secs "$tmp")" == "7" ]] && ok "reads a setting" || bad "reads a setting"
+echo "mk_machine" > "$XDG_CONFIG_HOME/mast/channel"
+[[ "$(MAST_CHANNEL_URL= mast_channel_url "$tmp")" == "https://mast.tissue.dev/mk_machine" ]] && ok "per-machine channel wins over the project" || bad "machine vs project"
+rm "$XDG_CONFIG_HOME/mast/channel"
+printf -- '---\nstop_min_secs: 300\n---\n' > "$XDG_CONFIG_HOME/mast/settings.md"
+[[ "$(mast_setting stop_min_secs "$tmp")" == "300" ]] && ok "settings.md wins over the project" || bad "settings.md vs project"
+rm "$XDG_CONFIG_HOME/mast/settings.md"
+if command -v git >/dev/null 2>&1; then
+  git -C "$tmp" init -q && git -C "$tmp" add .codex/mast.local.md
+  ( MAST_CHANNEL_URL= mast_channel_url "$tmp" >/dev/null ) && bad "ignores a git-tracked project file" || ok "ignores a git-tracked project file"
+  rm -rf "$tmp/.git"
+fi
+
+# hostile values never reach arithmetic
+pwn="$tmp/pwned"; proj="$tmp/hostile"; mkdir -p "$proj/.codex" "$tmp/mast-codex-$(id -u)"
+printf -- '---\nchannel_url: mk_project\nstop_min_secs: HOME[$(touch %s)]\n---\n' "$pwn" > "$proj/.codex/mast.local.md"
+echo 0 > "$tmp/mast-codex-$(id -u)/h1.start"
+printf '%s' '{"hook_event_name":"Stop","session_id":"h1","cwd":"'"$proj"'"}' | MAST_DRY_RUN=1 TMPDIR="$tmp" MAST_CHANNEL_URL= bash scripts/notify.sh >/dev/null 2>&1
+[[ ! -e "$pwn" ]] && ok "hostile stop_min_secs runs nothing" || bad "stop_min_secs injection ran"
+printf 'HOME[$(touch %s)]' "$pwn" > "$tmp/mast-codex-$(id -u)/h2.start"
+printf '%s' '{"hook_event_name":"Stop","session_id":"h2","cwd":"'"$proj"'"}' | MAST_DRY_RUN=1 TMPDIR="$tmp" MAST_CHANNEL_URL= bash scripts/notify.sh >/dev/null 2>&1
+[[ ! -e "$pwn" ]] && ok "hostile stamp runs nothing" || bad "stamp injection ran"
+printf -- '---\nchannel_url: https://evil.example/mk_x\n---\n' > "$proj/.codex/mast.local.md"
+out="$(printf '%s' '{"hook_event_name":"PermissionRequest","session_id":"h3","cwd":"'"$proj"'","tool_name":"Bash"}' | MAST_DRY_RUN=1 TMPDIR="$tmp" MAST_CHANNEL_URL= bash scripts/notify.sh 2>&1 >/dev/null)"
+[[ -z "$out" ]] && ok "project file can't point the hook at another host" || bad "redirect: $out"
 
 # hook script, dry run
 export MAST_DRY_RUN=1 MAST_CHANNEL_URL=mk_test TMPDIR="$tmp"
@@ -74,5 +112,5 @@ out="$(MAST_CHANNEL_URL= HOME="$tmp" XDG_CONFIG_HOME="$tmp/none" run '{"hook_eve
 [[ -z "$out" ]] && ok "unconfigured is silent" || bad "unconfigured: $out"
 out="$(printf '{"hook_event_name":"PermissionRequest","session_id":"s7","cwd":"/x/p","tool_name":"Bash"}' | bash scripts/notify.sh 2>/dev/null)"
 [[ -z "$out" ]] && ok "stdout stays empty (no decision JSON)" || bad "stdout: $out"
-rm -rf "$tmp"
+rm -rf "$tmp" "$cfg"
 [[ $fail -eq 0 ]] && echo "all passed" || { echo "FAILED"; exit 1; }
