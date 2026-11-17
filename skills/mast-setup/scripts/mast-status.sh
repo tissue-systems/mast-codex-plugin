@@ -6,14 +6,18 @@ set -u
 
 src="none"
 if [[ -n "${MAST_CHANNEL_URL:-}" ]]; then src="MAST_CHANNEL_URL environment variable"
+elif [[ -f "$(mast_user_dir)/channel" ]]; then src="$(mast_user_dir)/channel"
+elif [[ -n "$(mast_frontmatter "$(mast_user_dir)/settings.md" channel_url)" ]]; then src="$(mast_user_dir)/settings.md (channel_url)"
 elif [[ -n "$(mast_setting channel_url)" ]]; then src="$(mast_settings_file) (channel_url)"
-elif [[ -f "${XDG_CONFIG_HOME:-$HOME/.config}/mast/channel" ]]; then src="${XDG_CONFIG_HOME:-$HOME/.config}/mast/channel"
+fi
+if [[ -f "$(mast_settings_file)" ]] && ! mast_project_file >/dev/null; then
+  echo "note: $(mast_settings_file) is tracked by git, so it is ignored"
 fi
 if url="$(mast_channel_url)"; then
   key="${url##*/}"
   echo "channel: configured (${key:0:6}…${key: -4}) from $src"
 else
-  echo "channel: not configured"
+  echo "channel: not configured (or its host is not mast.tissue.dev and not in allowed_hosts)"
 fi
 echo "on_stop: ${MAST_ON_STOP:-$(mast_setting on_stop)}"
 echo "stop_min_secs: ${MAST_STOP_MIN_SECS:-$(mast_setting stop_min_secs)}"

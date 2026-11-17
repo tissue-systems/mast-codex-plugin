@@ -29,14 +29,14 @@ Paths below are relative to this skill's directory.
      project on this machine pages the same channel; the card's title names the project.
    - **Per project:** write `.codex/mast.local.md` in the project root with YAML frontmatter
      `channel_url: https://mast.tissue.dev/mk_…`. Confirm `.codex/*.local.md` is in the
-     project's `.gitignore` before writing, and add it if not. This wins over the per-machine
-     file. A project that already has `.claude/mast.local.md` from the Claude Code plugin
+     project's `.gitignore` before writing, and add it if not. The hooks ignore this file
+     while git tracks it, and it is read only when no per-machine file is set. A project that already has `.claude/mast.local.md` from the Claude Code plugin
      needs nothing: that file is read too.
    - **Environment:** `MAST_CHANNEL_URL` in the shell Codex runs in. This wins over both files.
    Never write the URL into a file that is committed.
 
-4. Optional settings, all in the same `mast.local.md` frontmatter or as environment
-   variables. Mention them; do not set them unless asked.
+4. Optional settings, as frontmatter in `~/.config/mast/settings.md` (wins) or the
+   project's `mast.local.md`, or as environment variables. Mention them; do not set them unless asked.
 
    | Setting | Env | Default | Meaning |
    |---|---|---|---|

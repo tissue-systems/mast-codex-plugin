@@ -81,14 +81,20 @@ they run.
 The channel URL is read from, in order:
 
 1. `MAST_CHANNEL_URL` in the environment Codex runs in
-2. `channel_url:` in the frontmatter of `.codex/mast.local.md` in the project, or of
-   `.claude/mast.local.md` when the `.codex` one is absent (per project)
-3. `~/.config/mast/channel`, a file holding the URL (per machine)
+2. `~/.config/mast/channel`, a file holding the URL (per machine)
+3. `channel_url:` in the frontmatter of `~/.config/mast/settings.md`, then of
+   `.codex/mast.local.md` in the project, or of `.claude/mast.local.md` when the `.codex`
+   one is absent (per project)
 
 A full URL (`https://mast.tissue.dev/mk_…`) or a bare `mk_…` key both work. The URL is a
-send credential: keep it out of git.
+send credential: keep it out of git. A project `mast.local.md` that git tracks is ignored
+completely: it came with the repository, and a repository you cloned shouldn't decide where
+your session text goes. A channel URL on any host other than `mast.tissue.dev` is refused
+unless you list that host in `MAST_ALLOWED_HOSTS` or in `~/.config/mast/allowed_hosts`.
 
-Optional, as frontmatter keys in `mast.local.md` or as environment variables:
+Optional, as frontmatter keys in `~/.config/mast/settings.md` (wins) or the project's
+`mast.local.md`, or as environment variables (win over both). A value that isn't valid for
+its key, such as a `stop_min_secs` that isn't a whole number, falls back to the default:
 
 | Frontmatter | Environment | Default | |
 |---|---|---|---|
