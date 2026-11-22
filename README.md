@@ -55,8 +55,8 @@ fetch(process.env.MAST_URL, { method: "POST", body: new URLSearchParams({
 
 - A `page` repeats on the phone until it is acknowledged, and ignores quiet hours.
 - `key` folds a storm into one card with a count, so a handler failing in a loop pages once.
-- A **vital** is a channel with a period: the cron job sends a heartbeat on success, and Mast
-  pages you when the heartbeat stops. That is the failure email can never report.
+- A **heartbeat** is a channel with a period: the cron job sends a beat on success, and Mast
+  pages you when the beats stop. That is the failure email can never report.
 - The channel URL is the only secret, and rotating it is one tap in the app.
 
 Codex uses the skill on its own when the app being built needs to reach its owner. The pattern
